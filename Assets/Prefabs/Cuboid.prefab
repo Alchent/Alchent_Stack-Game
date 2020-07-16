@@ -48,8 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  dropSpeed: -50
   drop: 0
+  width: 0
+  height: 0
 --- !u!33 &323156797017951904
 MeshFilter:
   m_ObjectHideFlags: 0

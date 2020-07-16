@@ -108,6 +108,7 @@ public class Cuboid : MonoBehaviour
                 lostCuboid.transform.position = new Vector3(lostX, offsetY, transform.position.z);
                 lostCuboid.SetUp(lostWidth, height, offsetY, moveX);
                 lostCuboid.Generate(true);
+                lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else if (difX < 0){ //lost at x < 0
@@ -128,6 +129,7 @@ public class Cuboid : MonoBehaviour
                 lostCuboid.transform.position = new Vector3(lostX, offsetY, transform.position.z);
                 lostCuboid.SetUp(lostWidth, height, offsetY, moveX);
                 lostCuboid.Generate(true);
+                lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else
@@ -160,6 +162,7 @@ public class Cuboid : MonoBehaviour
                 lostCuboid.transform.position = new Vector3(transform.position.x, offsetY, lostZ);
                 lostCuboid.SetUp(width, lostHeight, offsetY, moveX);
                 lostCuboid.Generate(true);
+                lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else if (difZ < 0)
@@ -179,6 +182,7 @@ public class Cuboid : MonoBehaviour
                 lostCuboid.transform.position = new Vector3(transform.position.x, offsetY, lostZ);
                 lostCuboid.SetUp(width, lostHeight, offsetY, moveX);
                 lostCuboid.Generate(true);
+                lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else
@@ -202,7 +206,7 @@ public class Cuboid : MonoBehaviour
         SetNormals();
         mesh.triangles = triangles;
         mesh.Optimize();
-        collider.size = new Vector3(width - 0.01f, 1, height - 0.01f);
+        collider.size = new Vector3(width, 1, height);
         collider.center = new Vector3(0, 0.5f, 0);
     }
 
