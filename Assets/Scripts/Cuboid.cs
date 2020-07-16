@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Runtime.ExceptionServices;
-using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
+﻿using UnityEngine;
 
 public class Cuboid : MonoBehaviour
 {
@@ -240,7 +234,7 @@ public class Cuboid : MonoBehaviour
         Vector3[] vertices = new Vector3[]
 {
             // Bottom Polygon
-            vertice_0, vertice_1, vertice_2, vertice_0,
+            vertice_0, vertice_1, vertice_2, vertice_3,
             // Left Polygon
             vertice_7, vertice_4, vertice_0, vertice_3,
             // Front Polygon

@@ -936,6 +936,8 @@ MonoBehaviour:
   scoreText: {fileID: 147132613}
   widthStart: 10
   heightStart: 10
+  startMoveX: 1
+  moveX: 1
   score: 0
 --- !u!4 &1336590847
 Transform:
@@ -1118,7 +1120,7 @@ Transform:
   m_GameObject: {fileID: 1822416346}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 10, y: 1.5, z: 10}
   m_Children: []
   m_Father: {fileID: 286584699}
   m_RootOrder: 0
@@ -1136,7 +1138,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: -10
-  dropSpeed: -10
   drop: 1
   width: 10
   height: 10
