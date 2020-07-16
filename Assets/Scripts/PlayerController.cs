@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
                 gameManager.moveX = !gameManager.moveX;
 
                 generator.previousCuboid = generator.currentCuboid;
-                generator.GenerateCuboid(generator.previousCuboid.width, generator.previousCuboid.height,
+                generator.GenerateCuboid(generator.previousCuboid.width, generator.previousCuboid.depth,
                                             gameManager.score, gameManager.moveX);
 
                 mainCamera.transform.position += Vector3.up;

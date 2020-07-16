@@ -2,15 +2,17 @@
 
 public class Cuboid : MonoBehaviour
 {
+    
     public float speed = -10.0f;
     public bool drop;
     public float width;
-    public float height;
+    public float height = 1.5f;
+    public float depth;
 
     private const float MAX_MOVE_X = 10.0f;
     private const float MAX_MOVE_Z = 10.0f;
     private bool moveX;
-    private int offsetY;
+    private float offsetY;
     private Mesh mesh;
     private Vector3[] vertices;
     private Rigidbody rb;
@@ -79,6 +81,7 @@ public class Cuboid : MonoBehaviour
     public bool Separate()
     {
         CuboidGenerator cuboidGenerator = FindObjectOfType<CuboidGenerator>();
+        PerfectDrop perfectDrop = FindObjectOfType<PerfectDrop>();
         Cuboid prevCuboid = cuboidGenerator.previousCuboid;
         Vector3 prevCuboidPos = prevCuboid.transform.position;
 
@@ -90,7 +93,7 @@ public class Cuboid : MonoBehaviour
             lostWidth = Mathf.Abs(difX);
             remainWidth = prevCuboid.width - lostWidth;
 
-            if(difX > 0) // lost at x > 0
+            if(difX > GameManager.GAME_DIFICULTY) // lost at x > 0
             {
                 if (difX > prevCuboid.width) return false;
 
@@ -99,19 +102,20 @@ public class Cuboid : MonoBehaviour
 
                 //Generate Remain Cuboid
                 transform.position = Vector3.zero;
-                SetUp(remainWidth, height, offsetY, moveX);
+                SetUp(remainWidth, depth, offsetY, moveX, height);
                 Generate(false);
                 transform.position = new Vector3(remainX, offsetY, prevCuboidPos.z);
 
                 //Generate Lost Cuboid
-                Cuboid lostCuboid = Instantiate<Cuboid>(FindObjectOfType<CuboidGenerator>().cuboidPrefab);
+                Cuboid lostCuboid = Instantiate<Cuboid>(cuboidGenerator.cuboidPrefab);
                 lostCuboid.transform.position = new Vector3(lostX, offsetY, transform.position.z);
-                lostCuboid.SetUp(lostWidth, height, offsetY, moveX);
+                lostCuboid.SetUp(lostWidth, depth, offsetY, moveX, height);
                 lostCuboid.Generate(true);
                 lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
-            else if (difX < 0){ //lost at x < 0
+            else if (difX < -GameManager.GAME_DIFICULTY)
+            { //lost at x < 0
 
                 if (difX < -prevCuboid.width) return false;
 
@@ -120,75 +124,104 @@ public class Cuboid : MonoBehaviour
 
 
                 transform.position = Vector3.zero;
-                SetUp(remainWidth, height, offsetY, moveX);
+                SetUp(remainWidth, depth, offsetY, moveX, height);
                 Generate(false);
                 transform.position = new Vector3(remainX, offsetY, prevCuboidPos.z);
 
                 //Generate Lost Cuboid
-                Cuboid lostCuboid = Instantiate<Cuboid>(FindObjectOfType<CuboidGenerator>().cuboidPrefab);
+                Cuboid lostCuboid = Instantiate<Cuboid>(cuboidGenerator.cuboidPrefab);
                 lostCuboid.transform.position = new Vector3(lostX, offsetY, transform.position.z);
-                lostCuboid.SetUp(lostWidth, height, offsetY, moveX);
+                lostCuboid.SetUp(lostWidth, depth, offsetY, moveX, height);
                 lostCuboid.Generate(true);
                 lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else
             {
-                //perfect match
-                Debug.Log("perfect match");
+                //perfect drop
+                Debug.Log("perfect drop");
+                transform.position = Vector3.zero;
+                SetUp(width, depth, offsetY, moveX, height);
+                Generate(false);
+                transform.position = new Vector3(prevCuboidPos.x, offsetY, prevCuboidPos.z);
+
+                Vector3 currentPos = transform.position;
+                Vector3 p0 = new Vector3(currentPos.x + width / 2 + 0.5f, offsetY + height / 2, currentPos.z + depth / 2 + 0.5f);
+                Vector3 p1 = new Vector3(currentPos.x + width / 2 + 0.5f, offsetY + height / 2, currentPos.z -(depth / 2 + 0.5f));
+                Vector3 p2 = new Vector3(currentPos.x + -(width / 2 + 0.5f), offsetY + height / 2, currentPos.z -(depth / 2 + 0.5f));
+                Vector3 p3 = new Vector3(currentPos.x + -(width / 2 + 0.5f), offsetY + height / 2, currentPos.z + depth / 2 + 0.5f);
+                //Do animation
+                perfectDrop.SetPoints(p0, p1, p2, p3);
+                perfectDrop.StartAnim();
+
             }
         }
         else
         {
             float difZ = transform.position.z - prevCuboidPos.z;
-            float remainHeight, lostHeight, remainZ, lostZ;
+            float remainDepth, lostDepth, remainZ, lostZ;
 
-            lostHeight = Mathf.Abs(difZ);
-            remainHeight = prevCuboid.height - lostHeight;
+            lostDepth = Mathf.Abs(difZ);
+            remainDepth = prevCuboid.depth - lostDepth;
 
-            if (difZ > 0) // lost at z > 0
+            if (difZ > GameManager.GAME_DIFICULTY) // lost at z > 0
             {
                 //if (difZ > prevCuboid.height) return false;
 
-                remainZ = prevCuboidPos.z + prevCuboid.height / 2 - remainHeight / 2;
-                lostZ = prevCuboidPos.z + prevCuboid.height / 2 + lostHeight / 2;
+                remainZ = prevCuboidPos.z + prevCuboid.depth / 2 - remainDepth / 2;
+                lostZ = prevCuboidPos.z + prevCuboid.depth / 2 + lostDepth / 2;
                 transform.position = Vector3.zero;
-                SetUp(width, remainHeight, offsetY, moveX);
+                SetUp(width, remainDepth, offsetY, moveX, height);
                 Generate(false);
                 transform.position = new Vector3(prevCuboidPos.x, offsetY, remainZ);
 
                 //Generate Lost Cuboid
-                Cuboid lostCuboid = Instantiate<Cuboid>(FindObjectOfType<CuboidGenerator>().cuboidPrefab);
+                Cuboid lostCuboid = Instantiate<Cuboid>(cuboidGenerator.cuboidPrefab);
                 lostCuboid.transform.position = new Vector3(transform.position.x, offsetY, lostZ);
-                lostCuboid.SetUp(width, lostHeight, offsetY, moveX);
+                lostCuboid.SetUp(width, lostDepth, offsetY, moveX, height);
                 lostCuboid.Generate(true);
                 lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
-            else if (difZ < 0)
+            else if (difZ < -GameManager.GAME_DIFICULTY)
             { //lost at z < 0
 
                 //if (difZ < -prevCuboid.height) return false;
 
-                remainZ = prevCuboidPos.z - prevCuboid.height / 2 + remainHeight / 2;
-                lostZ = prevCuboidPos.z - prevCuboid.height / 2 - lostHeight / 2;
+                remainZ = prevCuboidPos.z - prevCuboid.depth / 2 + remainDepth / 2;
+                lostZ = prevCuboidPos.z - prevCuboid.depth / 2 - lostDepth / 2;
                 transform.position = Vector3.zero;
-                SetUp(width, remainHeight, offsetY, moveX);
+                SetUp(width, remainDepth, offsetY, moveX, height);
                 Generate(false);
                 transform.position = new Vector3(prevCuboidPos.x, offsetY, remainZ);
 
                 //Generate Lost Cuboid
-                Cuboid lostCuboid = Instantiate<Cuboid>(FindObjectOfType<CuboidGenerator>().cuboidPrefab);
+                Cuboid lostCuboid = Instantiate<Cuboid>(cuboidGenerator.cuboidPrefab);
                 lostCuboid.transform.position = new Vector3(transform.position.x, offsetY, lostZ);
-                lostCuboid.SetUp(width, lostHeight, offsetY, moveX);
+                lostCuboid.SetUp(width, lostDepth, offsetY, moveX, height);
                 lostCuboid.Generate(true);
                 lostCuboid.rb.freezeRotation = false;
                 lostCuboid.Drop();
             }
             else
             {
-                //perfect match
-                Debug.Log("perfect match");
+                //perfect drop
+                Debug.Log("perfect drop");
+                transform.position = Vector3.zero;
+                SetUp(width, depth, offsetY, moveX, height);
+                Generate(false);
+                transform.position = new Vector3(prevCuboidPos.x, offsetY, prevCuboidPos.z);
+
+                Vector3 currentPos = transform.position;
+                Vector3 p0 = new Vector3(currentPos.x + width / 2 + 0.5f, offsetY + height / 2, currentPos.z + depth / 2 + 0.5f);
+                Vector3 p1 = new Vector3(currentPos.x + width / 2 + 0.5f, offsetY + height / 2, currentPos.z - (depth / 2 + 0.5f));
+                Vector3 p2 = new Vector3(currentPos.x + -(width / 2 + 0.5f), offsetY + height / 2, currentPos.z - (depth / 2 + 0.5f));
+                Vector3 p3 = new Vector3(currentPos.x + -(width / 2 + 0.5f), offsetY + height / 2, currentPos.z + depth / 2 + 0.5f);
+                //Do animation
+                perfectDrop.SetPoints(p0, p1, p2, p3);
+                perfectDrop.StartAnim();
+
+
             }
         }
 
@@ -206,16 +239,17 @@ public class Cuboid : MonoBehaviour
         SetNormals();
         mesh.triangles = triangles;
         mesh.Optimize();
-        collider.size = new Vector3(width, 1, height);
-        collider.center = new Vector3(0, 0.5f, 0);
+        collider.size = new Vector3(width, height, depth);
+        collider.center = new Vector3(0, height/2, 0);
     }
 
-    public void SetUp(float width, float height, int offsetY, bool moveX)
+    public void SetUp(float width, float depth, float offsetY, bool moveX, float height)
     { 
         this.width = width;
-        this.height = height;
+        this.depth = depth;
         this.offsetY = offsetY;
         this.moveX = moveX;
+        this.height = height;
     }
 
     public void MoveToMaxMove()
@@ -227,14 +261,14 @@ public class Cuboid : MonoBehaviour
 
     private void SetVertices()
     {
-        Vector3 vertice_0 = new Vector3(-width/2, 0, height/2);
-        Vector3 vertice_1 = new Vector3(width/2, 0, height/2);
-        Vector3 vertice_2 = new Vector3(width/2, 0, -height / 2);
-        Vector3 vertice_3 = new Vector3(-width / 2, 0, -height / 2);
-        Vector3 vertice_4 = new Vector3(-width / 2, 1, height/2);
-        Vector3 vertice_5 = new Vector3(width/2, 1, height/2);
-        Vector3 vertice_6 = new Vector3(width/2, 1, -height / 2);
-        Vector3 vertice_7 = new Vector3(-width / 2, 1, -height/2);
+        Vector3 vertice_0 = new Vector3(-width/2, 0, depth / 2);
+        Vector3 vertice_1 = new Vector3(width/2, 0, depth / 2);
+        Vector3 vertice_2 = new Vector3(width/2, 0, -depth / 2);
+        Vector3 vertice_3 = new Vector3(-width / 2, 0, -depth / 2);
+        Vector3 vertice_4 = new Vector3(-width / 2, height, depth / 2);
+        Vector3 vertice_5 = new Vector3(width/2, height, depth / 2);
+        Vector3 vertice_6 = new Vector3(width/2, height, -depth / 2);
+        Vector3 vertice_7 = new Vector3(-width / 2, height, -depth / 2);
         Vector3[] vertices = new Vector3[]
 {
             // Bottom Polygon
