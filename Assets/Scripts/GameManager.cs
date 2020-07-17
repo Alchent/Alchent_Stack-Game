@@ -6,7 +6,7 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
-    public const float GAME_DIFICULTY = 1.0f;
+    public const float GAME_DIFICULTY = .1f;
     private CuboidGenerator generator;
     public TextMeshProUGUI scoreText;
     public float widthStart = 10.0f;
